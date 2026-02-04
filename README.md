@@ -17,6 +17,7 @@ This project is a robust, observable NLP laboratory focused on sentiment classif
 ├── data/                  # Input datasets (JSONL format)
 ├── notebooks/             # Interactive exploration and labs
 ├── outputs/               # Generated logs and result files
+│   ├── evidence/          # Exported figures and tables for reporting
 │   ├── runs.jsonl         # Detailed event logs (requests, responses, errors)
 │   ├── sentiment_results.jsonl  # Raw classification results
 │   └── confidence_summary.json  # Aggregated stability metrics
@@ -80,12 +81,36 @@ After running a batch, generate a stability summary:
 python -m src.scripts.run_confidence
 ```
 
+### Exporting Evidence
+Use the Jupyter notebook in `notebooks/` to generate and export figures and tables:
+- `01_sentiment_api_lab_export_evidence.ipynb`: Generates visualizations and CSV tables in `outputs/evidence/`.
+
 ## 🔍 Observability
 All interactions are logged to `outputs/runs.jsonl`. Each record includes:
 - **Timestamp (UTC)**
 - **Run ID**: Unique identifier for the session.
 - **Payload**: Redacted request/response data (no API keys leaked).
 - **Extra**: Performance metrics like `elapsed_ms`.
+
+## 📝 Assignment: NLP in the Wild – A Case Study
+
+This repository was created to support the following assignment:
+
+### 5.2 Discussion: NLP in the Wild – A Case Study
+**Prompt:**
+Natural Language Processing (NLP) is everywhere—from email autocomplete and grammar checkers to chatbots and voice assistants. This week, you’ll explore how NLP works in the real world through a hands-on mini case study.
+
+#### Step 1 – Explore on Your Own (Not Graded, Supports Your Post)
+Before writing your post, complete the following activities to build your understanding:
+
+1. **Choose a real-world NLP tool** you use (e.g., Grammarly, Siri, ChatGPT, Google Translate, etc.).
+2. **Describe how you believe it works.**
+3. **Which NLP tasks is it performing?** (e.g., sentiment analysis, named entity recognition, translation, summarization)
+4. **Apply a no-code sentiment analysis tool** (e.g., [LiveChat AI](https://www.livechat.com/ai-links/) or [Formulabot](https://formulabot.com/)) to a short text of your choice.
+   - Input example: a movie review, a tweet, an email, or a product description.
+   - Note the model’s output (positive, negative, neutral)
+
+This experience will help you answer the prompt more thoughtfully.
 
 ## 🛡️ Best Practices
 This project adheres to:
