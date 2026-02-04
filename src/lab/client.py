@@ -17,6 +17,14 @@ from openai import OpenAI
 
 @dataclass(frozen=True)
 class OpenAIConfig:
+    """
+    Configuration for the OpenAI client.
+
+    Attributes:
+        api_key: The OpenAI API key.
+        model: The model name to use for completions.
+        project_name: The name of the project for logging purposes.
+    """
     api_key: str
     model: str
     project_name: str
@@ -25,7 +33,12 @@ class OpenAIConfig:
 def load_config() -> OpenAIConfig:
     """
     Loads configuration from environment variables (including .env).
-    Raises a clear error if required values are missing.
+
+    Returns:
+        An OpenAIConfig object containing the project settings.
+
+    Raises:
+        RuntimeError: If OPENAI_API_KEY is missing from environment.
     """
     # Load .env once per process; safe to call multiple times.
     load_dotenv()
@@ -36,7 +49,7 @@ def load_config() -> OpenAIConfig:
             "OPENAI_API_KEY is missing. Add it to your .env file (not committed)."
         )
 
-    model = os.getenv("OPENAI_MODEL", "gpt-5").strip() or "gpt-5"
+    model = os.getenv("OPENAI_MODEL", "gpt-4o").strip() or "gpt-4o"
     project_name = os.getenv("PROJECT_NAME", "ain710-week5-nlp-in-the-wild").strip()
 
     return OpenAIConfig(api_key=api_key, model=model, project_name=project_name)
@@ -45,8 +58,24 @@ def load_config() -> OpenAIConfig:
 def get_client() -> OpenAI:
     """
     Returns a configured OpenAI client.
+
+    Returns:
+        An instance of the OpenAI client initialized with the loaded API key.
     """
     cfg = load_config()
     # The OpenAI SDK reads the API key from env by default,
     # but we pass it explicitly for clarity and testability.
     return OpenAI(api_key=cfg.api_key)
+
+
+if __name__ == "__main__":
+    # Example usage:
+    try:
+        config = load_config()
+        print(f"Loaded config for project: {config.project_name}")
+        print(f"Using model: {config.model}")
+        
+        # client = get_client()
+        # print("Client successfully initialized.")
+    except RuntimeError as e:
+        print(f"Configuration error: {e}")

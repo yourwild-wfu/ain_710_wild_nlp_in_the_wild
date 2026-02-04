@@ -50,6 +50,15 @@ SENTIMENT_SCHEMA = {
 
 @dataclass(frozen=True)
 class SentimentRequest:
+    """
+    Request parameters for sentiment classification.
+
+    Attributes:
+        text: The text to classify.
+        temperature: Sampling temperature (0.0 to 2.0).
+        max_output_tokens: Maximum tokens in the model response.
+        include_logprobs: Whether to request logprobs from the API.
+    """
     text: str
     temperature: float = 0.2
     max_output_tokens: int = 200
@@ -58,6 +67,18 @@ class SentimentRequest:
 
 @dataclass(frozen=True)
 class SentimentResponse:
+    """
+    Parsed results from sentiment classification.
+
+    Attributes:
+        label: The classified sentiment (positive/neutral/negative).
+        confidence: The model's reported confidence (0.0 to 1.0).
+        rationale: Brief explanation for the classification.
+        response_id: Unique ID from the OpenAI response.
+        elapsed_ms: Time taken for the API call in milliseconds.
+        raw_output_text: The raw JSON string returned by the model.
+        logprobs_included: Boolean indicating if logprobs were returned.
+    """
     label: str
     confidence: float
     rationale: str
@@ -71,8 +92,16 @@ class SentimentResponse:
 
 def _parse_structured_json(output_text: str) -> Dict[str, Any]:
     """
-    Parse the model output text into a dict. With Structured Outputs + strict schema,
-    this should always succeed unless something upstream fails.
+    Parse the model output text into a dict. 
+
+    Args:
+        output_text: The JSON string returned by the model.
+
+    Returns:
+        A dictionary containing the parsed sentiment data.
+
+    Raises:
+        ValueError: If the output text is not valid JSON.
     """
     try:
         return json.loads(output_text)
@@ -82,9 +111,17 @@ def _parse_structured_json(output_text: str) -> Dict[str, Any]:
 
 def classify_sentiment(req: SentimentRequest, ctx: RunContext) -> SentimentResponse:
     """
-    Run sentiment classification for a single text input and log:
-    - sentiment_request
-    - sentiment_result (or error)
+    Run sentiment classification for a single text input and log the event.
+
+    Args:
+        req: The sentiment request parameters.
+        ctx: The current run context for logging.
+
+    Returns:
+        A SentimentResponse object containing the results.
+
+    Raises:
+        Exception: Re-raises any exceptions encountered during the API call.
     """
     cfg = load_config()
     client = get_client()
@@ -176,9 +213,25 @@ def classify_sentiment(req: SentimentRequest, ctx: RunContext) -> SentimentRespo
 
 def build_default_context() -> RunContext:
     """
-    Convenience helper for scripts/notebooks.
+    Convenience helper for scripts/notebooks to create a standard RunContext.
+
+    Returns:
+        A RunContext initialized with a new run ID and loaded configuration.
     """
     from src.lab.logging_utils import new_run_id
 
     cfg = load_config()
     return RunContext(run_id=new_run_id(), project=cfg.project_name, model=cfg.model)
+
+
+if __name__ == "__main__":
+    # Example usage:
+    # try:
+    #     context = build_default_context()
+    #     request = SentimentRequest(text="I love this new feature!")
+    #     response = classify_sentiment(request, context)
+    #     print(f"Label: {response.label}, Confidence: {response.confidence}")
+    #     print(f"Rationale: {response.rationale}")
+    # except Exception as err:
+    #     print(f"Error: {err}")
+    print("Sentiment module loaded. Use classify_sentiment() to process text.")

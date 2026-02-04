@@ -26,6 +26,17 @@ DEFAULT_INPUTS_JSONL = Path("data/inputs.jsonl")
 
 @dataclass(frozen=True)
 class BatchConfig:
+    """
+    Configuration for batch sentiment processing.
+
+    Attributes:
+        n_runs_per_text: Number of times to repeat each text (for stability testing).
+        temperature: LLM sampling temperature.
+        max_output_tokens: Maximum tokens per model response.
+        include_logprobs: Whether to request logprobs.
+        write_results_jsonl: If True, appends each result to a JSONL file.
+        results_filename: The filename for results (stored in outputs/).
+    """
     n_runs_per_text: int = 1  # repeat each text N times
     temperature: float = 0.2
     max_output_tokens: int = 200
@@ -39,10 +50,20 @@ def load_texts_from_jsonl(path: Path = DEFAULT_INPUTS_JSONL) -> List[str]:
     """
     Load texts from a JSONL file.
 
-    Expected format per line (either is fine):
+    Expected format per line:
       {"text": "..."}
     or
       {"id": "...", "text": "..."}
+
+    Args:
+        path: Path to the JSONL file.
+
+    Returns:
+        A list of text strings.
+
+    Raises:
+        FileNotFoundError: If the file does not exist.
+        ValueError: If a line is missing the 'text' field or if the file is empty.
     """
     if not path.exists():
         raise FileNotFoundError(
@@ -67,6 +88,9 @@ def load_texts_from_jsonl(path: Path = DEFAULT_INPUTS_JSONL) -> List[str]:
 
 
 def _append_results_jsonl(path: Path, record: Dict[str, Any]) -> None:
+    """
+    Append a single record to a JSONL file.
+    """
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("a", encoding="utf-8") as f:
         f.write(json.dumps(record, ensure_ascii=False) + "\n")
@@ -80,13 +104,19 @@ def run_sentiment_batch(
     config: Optional[BatchConfig] = None,
 ) -> List[Dict[str, Any]]:
     """
-    Run sentiment classification over a set of texts.
+    Run sentiment classification over a set of texts and log progress.
 
-    Returns: list of dict records (easy to dump / convert to DataFrame).
-    Each record includes:
-      - item_index, run_index, text
-      - label, confidence, rationale
-      - elapsed_ms, response_id
+    Args:
+        ctx: The current run context for logging.
+        texts: Optional list of strings to process.
+        inputs_jsonl: Optional path to a JSONL file containing texts.
+        config: Optional batch configuration.
+
+    Returns:
+        A list of dictionary records containing results for each run.
+
+    Raises:
+        ValueError: If no texts are provided or if inputs are invalid.
     """
     cfg = config or BatchConfig()
 
@@ -160,3 +190,13 @@ def run_sentiment_batch(
     )
 
     return results
+
+
+if __name__ == "__main__":
+    # Example usage:
+    # from src.lab.sentiment import build_default_context
+    # context = build_default_context()
+    # test_texts = ["Happy day!", "Sad day."]
+    # results = run_sentiment_batch(ctx=context, texts=test_texts)
+    # print(f"Processed {len(results)} items.")
+    print("Sentiment batch module loaded. Use run_sentiment_batch() to process multiple texts.")

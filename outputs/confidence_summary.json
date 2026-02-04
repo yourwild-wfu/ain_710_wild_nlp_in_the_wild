@@ -13,7 +13,7 @@
     "confidence_max": 0.98,
     "low_confidence_flag": false,
     "unstable_flag": false,
-    "project": "ain710-week5-nlp-in-the-wild",
+    "project": "ain_710_wild_nlp_in_the_wild",
     "model": "gpt-5.2"
   },
   {
@@ -30,7 +30,7 @@
     "confidence_max": 0.66,
     "low_confidence_flag": true,
     "unstable_flag": false,
-    "project": "ain710-week5-nlp-in-the-wild",
+    "project": "ain_710_wild_nlp_in_the_wild",
     "model": "gpt-5.2"
   },
   {
@@ -47,7 +47,7 @@
     "confidence_max": 0.98,
     "low_confidence_flag": false,
     "unstable_flag": false,
-    "project": "ain710-week5-nlp-in-the-wild",
+    "project": "ain_710_wild_nlp_in_the_wild",
     "model": "gpt-5.2"
   },
   {
@@ -64,7 +64,7 @@
     "confidence_max": 0.93,
     "low_confidence_flag": false,
     "unstable_flag": false,
-    "project": "ain710-week5-nlp-in-the-wild",
+    "project": "ain_710_wild_nlp_in_the_wild",
     "model": "gpt-5.2"
   }
 ]

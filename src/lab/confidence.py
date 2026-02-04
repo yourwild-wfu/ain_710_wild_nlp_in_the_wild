@@ -32,13 +32,30 @@ DEFAULT_RESULTS_PATH = REPO_ROOT / "outputs" / "sentiment_results.jsonl"
 
 @dataclass(frozen=True)
 class ConfidenceConfig:
+    """
+    Configuration for confidence and stability summarization.
+
+    Attributes:
+        low_conf_threshold: Threshold below which confidence is flagged as low.
+        group_by: The field name to group results by ('text' or 'item_index').
+    """
     low_conf_threshold: float = 0.60
     group_by: str = "text"  # "text" or "item_index"
 
 
 def load_results_jsonl(path: Path = DEFAULT_RESULTS_PATH) -> List[Dict[str, Any]]:
     """
-    Load sentiment results from a JSONL file into a list of dicts.
+    Load sentiment results from a JSONL file into a list of dictionaries.
+
+    Args:
+        path: Path to the JSONL file.
+
+    Returns:
+        A list of dictionaries representing each result row.
+
+    Raises:
+        FileNotFoundError: If the results file does not exist.
+        ValueError: If the file contains invalid JSON or no rows.
     """
     if not path.exists():
         raise FileNotFoundError(f"Results file not found: {path}")
@@ -60,12 +77,13 @@ def load_results_jsonl(path: Path = DEFAULT_RESULTS_PATH) -> List[Dict[str, Any]
 
 
 def _mean(xs: List[float]) -> float:
+    """Calculates the arithmetic mean."""
     return sum(xs) / len(xs) if xs else float("nan")
 
 
 def _std_pop(xs: List[float]) -> float:
     """
-    Population standard deviation (stable for small n).
+    Calculates the population standard deviation.
     """
     if not xs:
         return float("nan")
@@ -76,8 +94,13 @@ def _std_pop(xs: List[float]) -> float:
 
 def _mode_label(labels: List[str]) -> Tuple[str, int]:
     """
-    Return (mode_label, mode_count).
-    Ties are broken deterministically by sorting label name.
+    Finds the most frequent label.
+
+    Args:
+        labels: A list of label strings.
+
+    Returns:
+        A tuple of (mode_label, count). Ties are broken alphabetically.
     """
     counts: Dict[str, int] = {}
     for lab in labels:
@@ -94,9 +117,18 @@ def summarize_confidence(
     config: Optional[ConfidenceConfig] = None,
 ) -> List[Dict[str, Any]]:
     """
-    Summarize stability + confidence metrics per group (text or item_index).
+    Summarize stability and confidence metrics per group.
 
-    Returns: list of summary dicts (DataFrame-friendly).
+    Args:
+        results: Optional list of result dicts. If None, loaded from results_path.
+        results_path: Path to load results from if results is None.
+        config: Configuration for summarization.
+
+    Returns:
+        A list of summary dictionaries, one per group.
+
+    Raises:
+        ValueError: If configuration or data is invalid.
     """
     cfg = config or ConfidenceConfig()
     rows = results if results is not None else load_results_jsonl(results_path)
@@ -154,8 +186,23 @@ def summarize_confidence(
 
 def write_confidence_summary_json(path: Path, summaries: List[Dict[str, Any]]) -> None:
     """
-    Write summary records as JSON (pretty).
+    Writes summary records to a JSON file (pretty-printed).
+
+    Args:
+        path: Destination path for the JSON file.
+        summaries: The list of summary dictionaries to write.
     """
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", encoding="utf-8") as f:
         json.dump(summaries, f, ensure_ascii=False, indent=2)
+
+
+if __name__ == "__main__":
+    # Example usage:
+    # try:
+    #     summaries = summarize_confidence()
+    #     for s in summaries:
+    #         print(f"Key: {s['group_key']}, Mean Conf: {s['confidence_mean']}")
+    # except Exception as e:
+    #     print(f"Error generating summary: {e}")
+    print("Confidence module loaded. Use summarize_confidence() to analyze results.")
