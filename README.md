@@ -93,7 +93,10 @@ When using chat tools and LLMs, choosing the right model is critical. Larger mod
 ### 5. Prompts & Engineering
 All system instructions and key behavior used by the laboratory are configurable via the `.env` file. This allows students to experiment without modifying the Python code:
 
-- Prompts:
+- **Regular Expressions (Regex)**: The lab uses regex to handle complex text processing:
+  - **Parsing**: `src/lab/client.py` uses a specialized regex pattern `r'"((?:\\.|[^"\\])*)"'` to find quoted strings while respecting "escaped" characters (like `\"`). This allows you to include semicolons and quotes within your batch inputs.
+  - **Security**: `src/lab/logging_utils.py` uses regex to automatically find and "redact" OpenAI API keys from logs, ensuring your secrets are never saved to disk.
+- **Prompts**:
   - **`SENTIMENT_PROMPT`**: Defines how the model should classify text sentiment.
   - **`ENTITY_EXTRACTION_PROMPT`**: Instructions for identifying people, places, and things in text.
   - **`NARRATIVE_PROMPT`**: The template used to generate educational summaries of embedding runs.
@@ -103,7 +106,7 @@ All system instructions and key behavior used by the laboratory are configurable
   - **`SENTIMENT_INCLUDE_LOGPROBS`** (default true)
 - Customizable Inputs:
   - **`TEST_TEXT`**: The text used for single-item tests.
-  - **`BATCH_TEXTS`**: A semicolon-separated list of texts used for batch processing.
+  - **`BATCH_TEXTS`**: A list of texts used for batch processing. Separate texts with a semicolon (`;`). To include a semicolon within a text, wrap each entry in escaped double quotes inside a quoted string: `"\"text1\";\"text2\""`.
 
 Students are encouraged to modify these in `.env` to see how the model's behavior changes!
 
@@ -167,9 +170,13 @@ If you want to clear your experimental history and start with a "clean slate"—
 
 By clearing these files, you avoid mixing old results with new experiments, ensuring your stability reports and visualizations are accurate and easy to interpret.
 
-### Exporting Evidence
-Use the Jupyter notebook in `notebooks/` to generate and export figures and tables:
-- `01_sentiment_api_lab_export_evidence.ipynb`: Generates visualizations and CSV tables in `outputs/evidence/`.
+### Exporting Evidence & Final Reporting
+The Jupyter notebook located in the `notebooks/` directory is the final stage of the laboratory workflow:
+- **Source Data**: The notebook (`01_sentiment_api_lab_export_evidence.ipynb`) reads the raw results from `outputs/sentiment_results.jsonl` and the aggregated metrics from `outputs/confidence_summary.json`.
+- **Analysis**: It performs data cleaning, calculates additional distributions, and prepares the data for visualization.
+- **Evidence Generation**: When executed, the notebook automatically generates and saves CSV tables and high-resolution figures (charts) to the `outputs/evidence/` directory. These files are intended to be used as evidence for your class discussion posts and assignments.
+
+By using the notebook, you transform raw AI logs into professional, easy-to-read reports that demonstrate your findings.
 
 ## 🔍 Observability
 All interactions are logged to `outputs/runs.jsonl`. Each record includes:

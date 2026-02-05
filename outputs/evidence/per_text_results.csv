@@ -1,5 +1,0 @@
-text,label,confidence,elapsed_ms,run_id,item_index,run_index
-"I love the design, but the setup was frustrating.",neutral,0.72,2434.6834999960265,run_20260204T115113Z_be993b96,0,0
-This was a complete waste of time.,negative,0.98,1342.22900000168,run_20260204T115113Z_be993b96,1,0
-Absolutely fantastic experience — would recommend.,positive,0.98,1523.6798000041745,run_20260204T115113Z_be993b96,2,0
-"Yeah, great… just what I needed (eye roll).",negative,0.9,1704.3597000010777,run_20260204T115113Z_be993b96,3,0

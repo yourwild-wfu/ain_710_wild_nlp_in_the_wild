@@ -10,6 +10,7 @@ Centralized OpenAI client + configuration loader.
 from __future__ import annotations
 
 import os
+import re
 from dataclasses import dataclass
 from typing import List
 from dotenv import load_dotenv
@@ -115,12 +116,31 @@ def load_config() -> OpenAIConfig:
     test_text = os.getenv("TEST_TEXT", "I love this new feature!").strip()
     batch_texts_raw = os.getenv(
         "BATCH_TEXTS",
-        "I love the design, but the setup was frustrating.;"
-        "This was a complete waste of time.;"
-        "Absolutely fantastic experience — would recommend.;"
-        "Yeah, great… just what I needed (eye roll)."
+        '\\"I love the design, but the setup was frustrating.\\";'
+        '\\"This was a complete waste of time.\\";'
+        '\\"Absolutely fantastic experience — would recommend.\\";'
+        '\\"Yeah, great… just what I needed (eye roll).\\"'
     ).strip()
-    batch_texts = [t.strip() for t in batch_texts_raw.split(";") if t.strip()]
+    
+    # Improved parsing: handles "text1";"text2" OR "\"text1\";\"text2\"" to allow semicolons inside quotes
+    # EDUCATIONAL NOTE: We use Regular Expressions (regex) here to handle character escaping.
+    # The pattern r'"((?:\\.|[^"\\])*)"' is a classic regex for finding quoted strings.
+    # - (?:\\.|[^"\\])*  means: match either an escaped character (\\.) OR any character that isn't a quote or backslash ([^"\\]).
+    # - This ensures that if someone puts \" inside their text, it doesn't prematurely end the match.
+    if batch_texts_raw.startswith('"') and batch_texts_raw.endswith('"'):
+        # Extract matches using regex
+        pattern = r'"((?:\\.|[^"\\])*)"'
+        matches = re.findall(pattern, batch_texts_raw)
+        
+        if matches:
+            # Unescape characters (e.g., \" -> ") and clean up
+            batch_texts = [m.replace('\\"', '"').replace('\\\\', '\\').strip() for m in matches if m.strip()]
+        else:
+            # Fallback if regex fails but we have quotes
+            batch_texts = [batch_texts_raw.strip('"').replace('\\"', '"')]
+    else:
+        # Fallback to simple semicolon split if not fully quoted
+        batch_texts = [t.strip() for t in batch_texts_raw.split(";") if t.strip()]
 
     return OpenAIConfig(
         api_key=api_key,

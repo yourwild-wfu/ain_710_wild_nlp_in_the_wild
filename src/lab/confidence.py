@@ -158,6 +158,9 @@ def summarize_confidence(
 
         # Pull common metadata from the first row
         first = items[0]
+        
+        # Get unique rationales
+        rationales = sorted(list(set(str(x.get("rationale", "")) for x in items)))
 
         summary = {
             "group_by": cfg.group_by,
@@ -173,6 +176,7 @@ def summarize_confidence(
             "confidence_max": round(max(confidences), 4),
             "low_confidence_flag": conf_mean < cfg.low_conf_threshold,
             "unstable_flag": flip_rate > 0.0,
+            "rationales": rationales,
             "project": first.get("project"),
             "model": first.get("model"),
         }
