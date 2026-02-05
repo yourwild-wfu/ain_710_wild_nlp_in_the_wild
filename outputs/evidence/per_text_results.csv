@@ -1,0 +1,4 @@
+text,label,confidence,elapsed_ms,run_id,item_index,run_index
+"The team showed up on time and the office looked clean, but I noticed they missed some spots behind the desks and the bathroom could have been better.",neutral,0.75,21949.70579998335,run_20260205T155914Z_0c77a36d,0,0
+"The team was incredibly thorough and even organized the common area, which we didn't expect. Everything was sparkling!",positive,0.9500000000000001,2434.508600010304,run_20260205T155914Z_0c77a36d,1,0
+"I was disappointed this time, the crew arrived 30 minutes late and the kitchen floor still felt sticky in spots after they left.",negative,0.9500000000000001,1535.2094999980181,run_20260205T155914Z_0c77a36d,2,0

@@ -46,6 +46,7 @@ class OpenAIConfig:
     narrative_prompt: str
     test_text: str
     batch_texts: List[str]
+    embedding_texts: List[str]
 
 
 def load_config() -> OpenAIConfig:
@@ -114,6 +115,7 @@ def load_config() -> OpenAIConfig:
     ).strip()
 
     test_text = os.getenv("TEST_TEXT", "I love this new feature!").strip()
+    # --- BATCH_TEXTS parsing ---
     batch_texts_raw = os.getenv(
         "BATCH_TEXTS",
         '\\"I love the design, but the setup was frustrating.\\";'
@@ -121,26 +123,16 @@ def load_config() -> OpenAIConfig:
         '\\"Absolutely fantastic experience — would recommend.\\";'
         '\\"Yeah, great… just what I needed (eye roll).\\"'
     ).strip()
-    
-    # Improved parsing: handles "text1";"text2" OR "\"text1\";\"text2\"" to allow semicolons inside quotes
-    # EDUCATIONAL NOTE: We use Regular Expressions (regex) here to handle character escaping.
-    # The pattern r'"((?:\\.|[^"\\])*)"' is a classic regex for finding quoted strings.
-    # - (?:\\.|[^"\\])*  means: match either an escaped character (\\.) OR any character that isn't a quote or backslash ([^"\\]).
-    # - This ensures that if someone puts \" inside their text, it doesn't prematurely end the match.
-    if batch_texts_raw.startswith('"') and batch_texts_raw.endswith('"'):
-        # Extract matches using regex
-        pattern = r'"((?:\\.|[^"\\])*)"'
-        matches = re.findall(pattern, batch_texts_raw)
-        
-        if matches:
-            # Unescape characters (e.g., \" -> ") and clean up
-            batch_texts = [m.replace('\\"', '"').replace('\\\\', '\\').strip() for m in matches if m.strip()]
-        else:
-            # Fallback if regex fails but we have quotes
-            batch_texts = [batch_texts_raw.strip('"').replace('\\"', '"')]
-    else:
-        # Fallback to simple semicolon split if not fully quoted
-        batch_texts = [t.strip() for t in batch_texts_raw.split(";") if t.strip()]
+    batch_texts = _parse_batch_texts(batch_texts_raw)
+
+    # --- EMBEDDING_TEXTS parsing ---
+    embedding_texts_raw = os.getenv(
+        "EMBEDDING_TEXTS",
+        '\\"The quick brown fox jumps over the lazy dog.\\";'
+        '\\"I love exploring natural language processing.\\";'
+        '\\"Embeddings represent text as dense vectors of numbers.\\"'
+    ).strip()
+    embedding_texts = _parse_batch_texts(embedding_texts_raw)
 
     return OpenAIConfig(
         api_key=api_key,
@@ -154,8 +146,33 @@ def load_config() -> OpenAIConfig:
         entity_extraction_prompt=entity_extraction_prompt,
         narrative_prompt=narrative_prompt,
         test_text=test_text,
-        batch_texts=batch_texts
+        batch_texts=batch_texts,
+        embedding_texts=embedding_texts
     )
+
+
+def _parse_batch_texts(raw_value: str) -> List[str]:
+    """
+    Internal helper to parse semicolon-separated strings, 
+    supporting the \"text1\";\"text2\" format via regex.
+    """
+    if not raw_value:
+        return []
+
+    if raw_value.startswith('"') and raw_value.endswith('"'):
+        # Extract matches using regex
+        pattern = r'"((?:\\.|[^"\\])*)"'
+        matches = re.findall(pattern, raw_value)
+        
+        if matches:
+            # Unescape characters (e.g., \" -> ") and clean up
+            return [m.replace('\\"', '"').replace('\\\\', '\\').strip() for m in matches if m.strip()]
+        else:
+            # Fallback if regex fails but we have quotes
+            return [raw_value.strip('"').replace('\\"', '"')]
+    else:
+        # Fallback to simple semicolon split if not fully quoted
+        return [t.strip() for t in raw_value.split(";") if t.strip()]
 
 
 def get_client() -> OpenAI:

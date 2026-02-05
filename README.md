@@ -106,7 +106,9 @@ All system instructions and key behavior used by the laboratory are configurable
   - **`SENTIMENT_INCLUDE_LOGPROBS`** (default true)
 - Customizable Inputs:
   - **`TEST_TEXT`**: The text used for single-item tests.
-  - **`BATCH_TEXTS`**: A list of texts used for batch processing. Separate texts with a semicolon (`;`). To include a semicolon within a text, wrap each entry in escaped double quotes inside a quoted string: `"\"text1\";\"text2\""`.
+  - **`BATCH_TEXTS`**: A list of texts used for batch processing.
+  - **`EMBEDDING_TEXTS`**: A list of texts used for embedding generation.
+  - **Formatting**: Separate texts with a semicolon (`;`). To include a semicolon within a text, wrap each entry in escaped double quotes inside a quoted string: `"\"text1\";\"text2\""`.
 
 Students are encouraged to modify these in `.env` to see how the model's behavior changes!
 

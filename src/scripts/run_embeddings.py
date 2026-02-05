@@ -14,6 +14,7 @@ from src.lab.embeddings import (
     EmbeddingRequest,
     build_default_context,
     generate_embedding,
+    load_config,
 )
 from src.lab.logging_utils import DEFAULT_OUTPUT_DIR, append_jsonl
 
@@ -21,12 +22,9 @@ OUTPUT_FILE = DEFAULT_OUTPUT_DIR / "embedding_results.jsonl"
 
 
 def main():
-    # 1. Prepare inputs
-    texts = [
-        "The quick brown fox jumps over the lazy dog.",
-        "I love exploring natural language processing.",
-        "Embeddings represent text as dense vectors of numbers.",
-    ]
+    # 1. Load config and inputs
+    config = load_config()
+    texts = config.embedding_texts
 
     # 2. Build context
     ctx = build_default_context()

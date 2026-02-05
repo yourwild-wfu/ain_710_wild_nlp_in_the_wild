@@ -1,0 +1,62 @@
+[
+  {
+    "group_by": "text",
+    "group_key": "I was disappointed this time, the crew arrived 30 minutes late and the kitchen floor still felt sticky in spots after they left.",
+    "n_runs": 1,
+    "label_mode": "negative",
+    "label_mode_count": 1,
+    "label_flip_count": 0,
+    "label_flip_rate": 0.0,
+    "confidence_mean": 0.95,
+    "confidence_std": 0.0,
+    "confidence_min": 0.95,
+    "confidence_max": 0.95,
+    "low_confidence_flag": false,
+    "unstable_flag": false,
+    "rationales": [
+      "The user expresses disappointment and mentions specific issues such as the crew arriving late and the kitchen floor being sticky, indicating a negative experience."
+    ],
+    "project": "ain_710_wild_nlp_in_the_wild",
+    "model": "gpt-4o"
+  },
+  {
+    "group_by": "text",
+    "group_key": "The team showed up on time and the office looked clean, but I noticed they missed some spots behind the desks and the bathroom could have been better.",
+    "n_runs": 1,
+    "label_mode": "neutral",
+    "label_mode_count": 1,
+    "label_flip_count": 0,
+    "label_flip_rate": 0.0,
+    "confidence_mean": 0.75,
+    "confidence_std": 0.0,
+    "confidence_min": 0.75,
+    "confidence_max": 0.75,
+    "low_confidence_flag": false,
+    "unstable_flag": false,
+    "rationales": [
+      "The statement includes both positive and negative aspects. The team was punctual and the office was generally clean, which are positive points. However, there are criticisms about missed spots and the bathroom, which balance the sentiment to neutral."
+    ],
+    "project": "ain_710_wild_nlp_in_the_wild",
+    "model": "gpt-4o"
+  },
+  {
+    "group_by": "text",
+    "group_key": "The team was incredibly thorough and even organized the common area, which we didn't expect. Everything was sparkling!",
+    "n_runs": 1,
+    "label_mode": "positive",
+    "label_mode_count": 1,
+    "label_flip_count": 0,
+    "label_flip_rate": 0.0,
+    "confidence_mean": 0.95,
+    "confidence_std": 0.0,
+    "confidence_min": 0.95,
+    "confidence_max": 0.95,
+    "low_confidence_flag": false,
+    "unstable_flag": false,
+    "rationales": [
+      "The text expresses satisfaction and surprise at the thoroughness and unexpected organization by the team, using positive language like 'incredibly thorough' and 'sparkling.'"
+    ],
+    "project": "ain_710_wild_nlp_in_the_wild",
+    "model": "gpt-4o"
+  }
+]
