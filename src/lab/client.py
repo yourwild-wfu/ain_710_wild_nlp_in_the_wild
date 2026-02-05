@@ -23,10 +23,12 @@ class OpenAIConfig:
     Attributes:
         api_key: The OpenAI API key.
         model: The model name to use for completions.
+        embedding_model: The model name to use for embeddings.
         project_name: The name of the project for logging purposes.
     """
     api_key: str
     model: str
+    embedding_model: str
     project_name: str
 
 
@@ -50,9 +52,15 @@ def load_config() -> OpenAIConfig:
         )
 
     model = os.getenv("OPENAI_MODEL", "gpt-4o").strip() or "gpt-4o"
+    embedding_model = os.getenv("EMBEDDING_MODEL", "text-embedding-3-small").strip() or "text-embedding-3-small"
     project_name = os.getenv("PROJECT_NAME", "ain710-week5-nlp-in-the-wild").strip()
 
-    return OpenAIConfig(api_key=api_key, model=model, project_name=project_name)
+    return OpenAIConfig(
+        api_key=api_key, 
+        model=model, 
+        embedding_model=embedding_model, 
+        project_name=project_name
+    )
 
 
 def get_client() -> OpenAI:

@@ -22,7 +22,7 @@ class EmbeddingRequest:
     Request parameters for generating embeddings.
     """
     text: str
-    model: str = "text-embedding-3-small"
+    model: Optional[str] = None
 
 
 @dataclass(frozen=True)
@@ -51,11 +51,13 @@ def generate_embedding(req: EmbeddingRequest, ctx: RunContext) -> EmbeddingRespo
         An EmbeddingResponse object.
     """
     client = get_client()
+    config = load_config()
+    model = req.model or config.embedding_model
 
     log_event(
         event_type="embedding_request",
         context=ctx,
-        payload={"text": req.text, "model": req.model},
+        payload={"text": req.text, "model": model},
         step="generate_embedding"
     )
 
@@ -63,14 +65,13 @@ def generate_embedding(req: EmbeddingRequest, ctx: RunContext) -> EmbeddingRespo
         # 1. Generate Embedding
         response = client.embeddings.create(
             input=req.text,
-            model=req.model
+            model=model
         )
         embedding_data = response.data[0].embedding
         usage = response.usage.model_dump()
 
         # 2. Extract Entities using LLM
         # Using the project's default model for extraction
-        config = load_config()
         ner_response = client.chat.completions.create(
             model=config.model,
             messages=[
@@ -95,7 +96,7 @@ def generate_embedding(req: EmbeddingRequest, ctx: RunContext) -> EmbeddingRespo
         embedding=embedding_data,
         magnitude=magnitude,
         entities=entities,
-        model=req.model,
+        model=model,
         usage=usage,
         elapsed_ms=timer.elapsed_ms
     )
@@ -126,7 +127,7 @@ def build_default_context() -> RunContext:
     return RunContext(
         run_id=new_run_id("embed"),
         project=cfg.project_name,
-        model="text-embedding-3-small"
+        model=cfg.embedding_model
     )
 
 
