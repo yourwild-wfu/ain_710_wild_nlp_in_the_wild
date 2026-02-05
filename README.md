@@ -71,14 +71,16 @@ OPENAI_MODEL=gpt-4o
 EMBEDDING_MODEL=text-embedding-3-small
 PROJECT_NAME=ain710-nlp-lab
 
-# Optional sentiment defaults (can be overridden per-request)
+# Optional sentiment defaults
 SENTIMENT_TEMPERATURE=0.2
 SENTIMENT_MAX_OUTPUT_TOKENS=200
 SENTIMENT_INCLUDE_LOGPROBS=true
 
-# Input strings for sentiment labs
-TEST_TEXT=I love this new feature!
-BATCH_TEXTS=I love the design, but the setup was frustrating.;This was a complete waste of time.;Absolutely fantastic experience — would recommend.;Yeah, great… just what I needed (eye roll).
+# Input strings for labs
+TEST_TEXT="I love this new feature!"
+# Note: Separate each text with a semicolon (;)
+BATCH_TEXTS="\"I love the design, but the setup was frustrating.\";\"This was a complete waste of time.\""
+EMBEDDING_TEXTS="\"The quick brown fox jumps over the lazy dog.\";\"I love NLP.\""
 ```
 
 ### 4. Choice of Model
@@ -105,10 +107,10 @@ All system instructions and key behavior used by the laboratory are configurable
   - **`SENTIMENT_MAX_OUTPUT_TOKENS`** (default 200)
   - **`SENTIMENT_INCLUDE_LOGPROBS`** (default true)
 - Customizable Inputs:
-  - **`TEST_TEXT`**: The text used for single-item tests.
-  - **`BATCH_TEXTS`**: A list of texts used for batch processing.
-  - **`EMBEDDING_TEXTS`**: A list of texts used for embedding generation.
-  - **Formatting**: Separate texts with a semicolon (`;`). To include a semicolon within a text, wrap each entry in escaped double quotes inside a quoted string: `"\"text1\";\"text2\""`.
+  - **`TEST_TEXT`**: The text used for single-item tests (e.g., `test_single_sentiment.py`).
+  - **`BATCH_TEXTS`**: A list of texts used for batch sentiment processing (`run_sentiment_batch.py`).
+  - **`EMBEDDING_TEXTS`**: A list of texts used for embedding generation (`run_embeddings.py`).
+  - **Formatting**: Separate texts with a semicolon (`;`). To include a semicolon within a text or ensure robust parsing, wrap each entry in escaped double quotes inside a quoted string: `"\"text1\";\"text2\""`.
 
 Students are encouraged to modify these in `.env` to see how the model's behavior changes!
 
