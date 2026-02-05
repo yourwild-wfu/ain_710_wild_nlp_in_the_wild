@@ -1,0 +1,21 @@
+{
+  "total_processed": 3,
+  "mean_magnitude": 1.0,
+  "mean_latency_ms": 2714.43,
+  "unique_entities_count": 5,
+  "unique_entities": [
+    "Embeddings",
+    "dense vectors",
+    "natural language processing",
+    "numbers",
+    "text"
+  ],
+  "usage_summary": {
+    "total_prompt_tokens": 27,
+    "total_completion_tokens": 0,
+    "total_tokens": 27
+  },
+  "model": "text-embedding-3-small",
+  "project": "embed",
+  "narrative_overview": "This embedding run processed 3 items using the **text-embedding-3-small** model, and the reported **Mean Magnitude (L2 Norm) of 1.0** is a strong indicator that the model outputs are **L2-normalized** (or very close to it). In practical terms, each embedding vector has length ~1, which standardizes scale across inputs. That normalization is helpful because it makes similarity comparisons more stable: when all vectors have the same magnitude, measures like **cosine similarity** (and even dot product, which becomes equivalent to cosine under unit normalization) focus on **direction/angle**, emphasizing semantic alignment rather than differences in vector length.\n\nThe run also extracted **5 unique entities**—*Embeddings, dense vectors, natural language processing, numbers, text*—which map neatly onto the conceptual space these vectors are meant to represent. These entities highlight the core semantics likely present in the inputs: “embeddings” and “dense vectors” point to the representation method, “natural language processing” situates the domain, and “text” vs. “numbers” reflects the key transformation embeddings perform—turning language into numerical form. In an embedding space, such entities often correspond to **semantic anchors**: terms that help explain why certain items end up near each other (shared meaning) or farther apart (different concepts), reinforcing how embeddings capture relationships among ideas rather than just matching keywords."
+}
