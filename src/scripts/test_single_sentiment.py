@@ -1,18 +1,20 @@
 """
-test_sentiment.py
+test_single_sentiment.py
 
 Basic smoke test for sentiment classification.
 """
 
 from src.lab.sentiment import SentimentRequest, classify_sentiment, build_default_context
+from src.lab.client import load_config
 
 
 def main() -> None:
     """
     Runs a single sentiment classification test.
     """
+    config = load_config()
     ctx = build_default_context()
-    req = SentimentRequest(text="I love the design, but the setup was frustrating.")
+    req = SentimentRequest(text=config.test_text)
     
     print(f"Testing sentiment classification for: '{req.text}'")
     

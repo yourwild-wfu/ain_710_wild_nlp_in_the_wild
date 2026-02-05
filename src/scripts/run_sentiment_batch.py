@@ -1,26 +1,23 @@
 """
-run_batch.py
+run_sentiment_batch.py
 
 Script to run sentiment classification on a batch of texts.
 """
 
 from src.lab.sentiment import build_default_context
 from src.lab.sentiment_batch import BatchConfig, run_sentiment_batch
+from src.lab.client import load_config
 
 
 def main() -> None:
     """
     Main entry point for running the sentiment batch process.
     """
+    config = load_config()
     ctx = build_default_context()
 
     # Define some example texts to classify
-    texts = [
-        "I love the design, but the setup was frustrating.",
-        "This was a complete waste of time.",
-        "Absolutely fantastic experience — would recommend.",
-        "Yeah, great… just what I needed (eye roll).",
-    ]
+    texts = config.batch_texts
 
     print(f"Starting batch sentiment classification for {len(texts)} texts...")
     

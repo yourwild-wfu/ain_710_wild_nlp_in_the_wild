@@ -77,7 +77,7 @@ def generate_embedding(req: EmbeddingRequest, ctx: RunContext) -> EmbeddingRespo
             messages=[
                 {
                     "role": "system",
-                    "content": "You are a helpful assistant that extracts entities (people, places, things) from text. Return only a comma-separated list of entities, or 'None' if none found."
+                    "content": config.entity_extraction_prompt
                 },
                 {"role": "user", "content": f"Extract entities from: '{req.text}'"}
             ]
@@ -154,20 +154,13 @@ def generate_embedding_narrative(summary: Dict[str, Any]) -> str:
     client = get_client()
     config = load_config()
 
-    prompt = f"""
-    You are an AI educator teaching a class about Natural Language Processing and Embeddings.
-    Provide a concise (2-3 paragraph) narrative overview of the following embedding run results:
-    
-    - Total items processed: {summary['total_processed']}
-    - Mean Magnitude (L2 Norm): {summary['mean_magnitude']}
-    - Unique Entities Found: {summary['unique_entities_count']}
-    - Entities list: {", ".join(summary['unique_entities'])}
-    - Model used: {summary['model']}
-    
-    Explain what the Mean Magnitude tells us about normalization in this model.
-    Discuss the significance of the entities extracted in relation to the semantic vectors.
-    Keep the tone professional yet encouraging for students.
-    """
+    prompt = config.narrative_prompt.format(
+        total_processed=summary['total_processed'],
+        mean_magnitude=summary['mean_magnitude'],
+        unique_entities_count=summary['unique_entities_count'],
+        entities_list=", ".join(summary['unique_entities']),
+        model=summary['model']
+    )
 
     try:
         response = client.chat.completions.create(

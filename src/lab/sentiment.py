@@ -55,14 +55,14 @@ class SentimentRequest:
 
     Attributes:
         text: The text to classify.
-        temperature: Sampling temperature (0.0 to 2.0).
-        max_output_tokens: Maximum tokens in the model response.
-        include_logprobs: Whether to request logprobs from the API.
+        temperature: Sampling temperature (0.0 to 2.0). If None, uses SENTIMENT_TEMPERATURE from .env.
+        max_output_tokens: Maximum tokens in the model response. If None, uses SENTIMENT_MAX_OUTPUT_TOKENS from .env.
+        include_logprobs: Whether to request logprobs from the API. If None, uses SENTIMENT_INCLUDE_LOGPROBS from .env.
     """
     text: str
-    temperature: float = 0.2
-    max_output_tokens: int = 200
-    include_logprobs: bool = True
+    temperature: Optional[float] = None
+    max_output_tokens: Optional[int] = None
+    include_logprobs: Optional[bool] = None
 
 
 @dataclass(frozen=True)
@@ -126,8 +126,13 @@ def classify_sentiment(req: SentimentRequest, ctx: RunContext) -> SentimentRespo
     cfg = load_config()
     client = get_client()
 
+    # Resolve effective parameters from request or environment defaults
+    eff_temperature = req.temperature if req.temperature is not None else cfg.sentiment_temperature
+    eff_max_tokens = req.max_output_tokens if req.max_output_tokens is not None else cfg.sentiment_max_output_tokens
+    eff_include_logprobs = req.include_logprobs if req.include_logprobs is not None else cfg.sentiment_include_logprobs
+
     # Build "include" fields for extra response data (e.g., logprobs)
-    include = ["message.output_text.logprobs"] if req.include_logprobs else None
+    include = ["message.output_text.logprobs"] if eff_include_logprobs else None
 
     # Log the request (do NOT log secrets; logging_utils redacts patterns)
     log_event(
@@ -147,12 +152,12 @@ def classify_sentiment(req: SentimentRequest, ctx: RunContext) -> SentimentRespo
             response = client.responses.create(
                 model=cfg.model,
                 input=[
-                    {"role": "system", "content": SYSTEM_INSTRUCTIONS},
+                    {"role": "system", "content": cfg.sentiment_prompt},
                     {"role": "user", "content": req.text},
                 ],
                 text={"format": SENTIMENT_SCHEMA},
-                temperature=req.temperature,
-                max_output_tokens=req.max_output_tokens,
+                temperature=eff_temperature,
+                max_output_tokens=eff_max_tokens,
                 include=include,
             )
 

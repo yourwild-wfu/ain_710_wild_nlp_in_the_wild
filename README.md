@@ -1,16 +1,15 @@
 # AIN-710: NLP in the Wild - Sentiment & Confidence Lab
 
-This project is a robust, observable NLP laboratory focused on sentiment classification using OpenAI's Structured Outputs API. It demonstrates best practices for building production-ready LLM integrations, including instrumentation, stability testing, and automated documentation.
+This project is a dedicated, hands-on laboratory for the AIN-710 "NLP in the Wild" assignment. It provides a real-world testing ground for exploring how modern AI understands human emotion and language. By using professional-grade tools, students can observe the inner workings of AI integrations, test their reliability, and learn how to manage AI behavior through configuration rather than complex code.
 
-## 🚀 Key Features
+## 🚀 Executive Summary of Features
 
-- **Structured Sentiment Analysis**: Uses OpenAI's latest Responses API with strict JSON schemas to ensure reliable output (label, confidence, and rationale).
-- **"Under the Hood" Instrumentation**: Lightweight logging of every request and response to JSONL files for auditability and performance tracking.
-- **Batch Processing**: Tools to run sentiment analysis on large datasets with support for repeated runs to test model stability.
-- **Confidence & Stability Metrics**: Advanced analysis of results to identify "flipping" labels and low-confidence predictions.
-- **Embeddings Laboratory**: Specialized tools for converting text into high-dimensional vectors, including L2-norm verification and named entity recognition.
-- **Automated Summaries & Narrative**: Generates structured summaries of sentiment and embedding runs, including AI-generated narrative insights for educational analysis.
-- **Developer Experience**: PEP 257 compliant docstrings, modular code structure, and comprehensive smoke tests.
+- **Reliable Sentiment Analysis**: Automatically categorizes text as positive, negative, or neutral with high precision, providing both a confidence score and a clear "reasoning" for every decision.
+- **Operational Transparency**: Every single interaction with the AI is recorded in detail. This allows for full auditability—seeing exactly what went in and what came out—similar to a black-box flight recorder for AI.
+- **Stress Testing & Stability**: Unlike simple tools, this lab can process large batches of text multiple times to see if the AI is consistent. It identifies "flipping" labels and low-confidence guesses to ensure the results are trustworthy.
+- **AI "Deep Thinking" (Embeddings)**: A specialized lab that shows how AI converts words into mathematical "vectors." It includes tools to extract key entities (people, places, things) and mathematically proves how the AI organizes information.
+- **Automated Insights**: The system doesn't just produce numbers; it generates narrative explanations of its findings, acting as an automated "AI Educator" to help students interpret the data.
+- **Plug-and-Play Experimentation**: Students can change the AI's "personality" or "rules" simply by editing a settings file. This makes it easy to experiment with "Prompt Engineering" without needing to be a programmer.
 
 ## 📁 Project Structure
 
@@ -34,7 +33,7 @@ This project is a robust, observable NLP laboratory focused on sentiment classif
 │   │   ├── embeddings.py  # Embedding generation and summarization
 │   │   └── logging_utils.py # JSONL logging and timing helpers
 │   └── scripts/           # Executable entry points
-│       ├── run_batch.py   # Execute batch sentiment runs
+│       ├── run_sentiment_batch.py   # Execute batch sentiment runs
 │       ├── run_confidence.py # Generate stability reports
 │       ├── run_embeddings.py # Generate text embeddings
 │       ├── run_embedding_summary.py # Generate embedding reports
@@ -48,6 +47,11 @@ This project is a robust, observable NLP laboratory focused on sentiment classif
 ### 1. Prerequisites
 - Python 3.9+
 - OpenAI API Key
+  - **Note on Costs**: If you have a paid ChatGPT Plus account, you can generate an API key and use these features for a nominal fee. For the purposes of this class and the "NLP in the Wild" assignment, experimenting with this laboratory will typically cost **less than $1.00 USD**.
+  - **Pricing Reference**: You can find detailed pricing information at the [OpenAI Pricing Page](https://platform.openai.com/docs/pricing).
+  - **Cost Formula**: To estimate the cost for 1,000 tokens, use this formula: `(Price per 1M tokens / 1,000)`.
+    - *Example (gpt-4o)*: If the price is $2.50 per 1M input tokens, then 1,000 tokens = `$2.50 / 1,000 = $0.0025`.
+    - *Example (embeddings)*: If `text-embedding-3-small` is $0.02 per 1M tokens, then 1,000 tokens = `$0.02 / 1,000 = $0.00002`.
 
 ### 2. Install Dependencies
 ```bash
@@ -66,6 +70,15 @@ OPENAI_API_KEY=sk-your-key-here
 OPENAI_MODEL=gpt-4o
 EMBEDDING_MODEL=text-embedding-3-small
 PROJECT_NAME=ain710-nlp-lab
+
+# Optional sentiment defaults (can be overridden per-request)
+SENTIMENT_TEMPERATURE=0.2
+SENTIMENT_MAX_OUTPUT_TOKENS=200
+SENTIMENT_INCLUDE_LOGPROBS=true
+
+# Input strings for sentiment labs
+TEST_TEXT=I love this new feature!
+BATCH_TEXTS=I love the design, but the setup was frustrating.;This was a complete waste of time.;Absolutely fantastic experience — would recommend.;Yeah, great… just what I needed (eye roll).
 ```
 
 ### 4. Choice of Model
@@ -76,6 +89,23 @@ PROJECT_NAME=ain710-nlp-lab
     - **Performance**: Despite being "small", it captures complex semantic relationships effectively for most use cases.
 
 When using chat tools and LLMs, choosing the right model is critical. Larger models like `gpt-4o` provide better reasoning but higher cost/latency, while smaller specialized models like `text-embedding-3-small` are optimized for specific mathematical transformations.
+
+### 5. Prompts & Engineering
+All system instructions and key behavior used by the laboratory are configurable via the `.env` file. This allows students to experiment without modifying the Python code:
+
+- Prompts:
+  - **`SENTIMENT_PROMPT`**: Defines how the model should classify text sentiment.
+  - **`ENTITY_EXTRACTION_PROMPT`**: Instructions for identifying people, places, and things in text.
+  - **`NARRATIVE_PROMPT`**: The template used to generate educational summaries of embedding runs.
+- Sentiment behavior (defaults, per-run overridable):
+  - **`SENTIMENT_TEMPERATURE`** (default 0.2)
+  - **`SENTIMENT_MAX_OUTPUT_TOKENS`** (default 200)
+  - **`SENTIMENT_INCLUDE_LOGPROBS`** (default true)
+- Customizable Inputs:
+  - **`TEST_TEXT`**: The text used for single-item tests.
+  - **`BATCH_TEXTS`**: A semicolon-separated list of texts used for batch processing.
+
+Students are encouraged to modify these in `.env` to see how the model's behavior changes!
 
 ## 📈 Usage
 
@@ -89,7 +119,7 @@ python -m src.scripts.test_log
 ### Running Batch Sentiment
 To classify a list of texts and save results:
 ```bash
-python -m src.scripts.run_batch
+python -m src.scripts.run_sentiment_batch
 ```
 
 ### Analyzing Confidence & Stability
@@ -114,15 +144,28 @@ python -m src.scripts.run_embedding_summary
 To experience the full capabilities of the laboratory, it is recommended to run the scripts in the following order:
 
 1.  **Verification**: `python -m src.scripts.test_env` — Confirms your API key is valid.
-2.  **Sentiment Analysis**: `python -m src.scripts.run_batch` — Processes the input data.
+2.  **Sentiment Analysis**: `python -m src.scripts.run_sentiment_batch` — Processes the input data.
 3.  **Stability Report**: `python -m src.scripts.run_confidence` — Analyzes the consistency of the sentiment results.
 4.  **Vectorization**: `python -m src.scripts.run_embeddings` — Generates embeddings and extracts entities.
 5.  **Embedding Summary**: `python -m src.scripts.run_embedding_summary` — Produces the mathematical and narrative report.
 6.  **Reporting**: Open `notebooks/01_sentiment_api_lab_export_evidence.ipynb` to generate final visualizations.
 
-### Resetting the Lab
-If you want to start over with fresh data, you can clear the contents of the files in the `outputs/` directory (e.g., `runs.jsonl`, `sentiment_results.jsonl`, `embedding_results.jsonl`). 
-**Note**: Do not delete the files themselves, just delete the text within them. This ensures the directory structure remains intact.
+### Starting Fresh & Resetting the Lab
+If you want to clear your experimental history and start with a "clean slate"—perhaps after changing your input strings or tweaking your prompts—follow these guidelines:
+
+1.  **Clear Results Files (Content Only)**:
+    - Open the files in the `outputs/` directory (e.g., `runs.jsonl`, `sentiment_results.jsonl`, `embedding_results.jsonl`).
+    - Delete all the text inside these files and save them.
+    - **Note**: Do not delete the files themselves, just the text within them. This ensures the directory structure remains intact and the scripts can immediately write new data.
+
+2.  **Clear Summary Reports**:
+    - You can also clear `confidence_summary.json` and `embeddings_summary.json` in the same way. These files are overwritten by the summary scripts, but clearing them ensures you don't accidentally view old data.
+
+3.  **Clear Evidence Folder**:
+    - You can safely delete the contents of the `outputs/evidence/` folder (such as the `.csv` and `.png` files).
+    - These files are "snapshots" generated by the Jupyter notebook. Deleting them ensures that your next notebook run produces fresh charts and tables based strictly on your newest data.
+
+By clearing these files, you avoid mixing old results with new experiments, ensuring your stability reports and visualizations are accurate and easy to interpret.
 
 ### Exporting Evidence
 Use the Jupyter notebook in `notebooks/` to generate and export figures and tables:
